@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-
 from Fila import Fila
 
 class VentanaSimulador:
@@ -112,6 +111,7 @@ class VentanaSimulador:
 
         for fila in tabla:
             print(fila)
+
 # Crear instancia de la ventana
 if __name__ == "__main__":
     root = tk.Tk()
