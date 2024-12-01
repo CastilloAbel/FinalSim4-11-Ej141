@@ -80,27 +80,27 @@ class Fila:
                     self.eventos.append(["llegada_paciente",i+1, rnd_llegada_paciente, llegada_paciente, llegada_paciente + llegada])
 
             self.eventos.append(["fin_atencion", None, None, None])
-            reloj = min((evento[-1] for evento in self.eventos if evento[-1] is not None), default=None)
+            reloj = min((evento[-1] for evento in self.eventos if evento[-1] is not None))
             return [self.dia, reloj, self.eventos, self.estado_medico, self.cola, self.tiempo_ocioso_medico, self.tiempo_consultorio, self.cantidad_atendidos, self.objetos]
         else:
             anterior = self.reloj
-            self.reloj = min((evento[-1] for evento in self.eventos if evento[-1] is not None), default=None)
+            self.reloj = min((evento[-1] for evento in self.eventos if evento[-1] is not None))
             reloj = self.reloj
             dia = self.dia
             for evento in self.eventos:
                 if evento[0] == "llegada_medico" and evento[-1] == self.reloj:
                     self.nombre_evento = "llegada_medico"
-                    if len(self.cola) > 0:
-                        self.cola.pop()
-                        self.estado_medico = "O"
-                        rnd_fin_atencion = random.random()
-                        tiempo_atencion = self.calcular_atencion(rnd_fin_atencion, prob_24_min, prob_27_min, prob_30_min, prob_32_min, prob_35_min, prob_38_min)
-                        proximo_fin_atencion = self.reloj + tiempo_atencion
-                        self.eventos[0][-1] = None
-                        self.eventos[-1] = ["fin_atencion", rnd_fin_atencion, tiempo_atencion, proximo_fin_atencion]
-                    else:
-                        self.estado_medico = "L"
-                        self.eventos[0][-1] = None
+                    # if len(self.cola) > 0:
+                        # self.cola.pop()
+                        # self.estado_medico = "O"
+                        # rnd_fin_atencion = random.random()
+                        # tiempo_atencion = self.calcular_atencion(rnd_fin_atencion, prob_24_min, prob_27_min, prob_30_min, prob_32_min, prob_35_min, prob_38_min)
+                        # proximo_fin_atencion = self.reloj + tiempo_atencion
+                        # self.eventos[0][-1] = None
+                        # self.eventos[-1] = ["fin_atencion", rnd_fin_atencion, tiempo_atencion, proximo_fin_atencion]
+                    # else:
+                    self.estado_medico = "L"
+                    self.eventos[0][-1] = None
                 if evento[0] == "llegada_paciente" and self.reloj == evento[-1]:
                     self.nombre_evento = "llegada_paciente"
                     self.tiempo_consultorio = self.reloj - hora_medico
