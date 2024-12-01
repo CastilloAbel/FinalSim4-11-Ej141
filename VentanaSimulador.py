@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+from Fila import Fila
+
 class VentanaSimulador:
     def __init__(self, root):
         self.root = root
@@ -12,6 +14,7 @@ class VentanaSimulador:
 
         # Crear labels y entradas con espaciado y alineación
         self.parameters = [
+            ("Cantidad de tiempo a simular (días):", "1000"),
             ("Hora de llegada del médico (hs):", "8"),
             ("Cantidad de pacientes:", "16"),
             ("Duración de la consulta (min):", "30"),
@@ -27,6 +30,8 @@ class VentanaSimulador:
             ("Probabilidad de que el médico tarde 32 min en atender:", "0.15"),
             ("Probabilidad de que el médico tarde 35 min en atender:", "0.15"),
             ("Probabilidad de que el médico tarde 38 min en atender:", "0.05"),
+            ("Cantidad de filas a mostrar (I):", "100"),
+            ("Día específico a mostrar (J):", "0")
         ]
 
         self.entries = []
@@ -40,11 +45,12 @@ class VentanaSimulador:
             self.entries.append(entry)
 
         # Asignar las entradas a variables para un acceso más legible
-        (self.entry_hora_medico, self.entry_cant_pacientes, self.entry_duracion_consulta,
+        (self.entry_dias_simular, self.entry_hora_medico, self.entry_cant_pacientes, self.entry_duracion_consulta,
          self.entry_prob_15_temprano, self.entry_prob_5_temprano, self.entry_prob_exacta,
          self.entry_prob_10_tarde, self.entry_prob_15_tarde, self.entry_prob_no_presenta,
          self.entry_prob_24_min, self.entry_prob_27_min, self.entry_prob_30_min,
-         self.entry_prob_32_min, self.entry_prob_35_min, self.entry_prob_38_min) = self.entries
+         self.entry_prob_32_min, self.entry_prob_35_min, self.entry_prob_38_min,
+         self.entry_filas_mostrar, self.entry_dia_especifico) = self.entries
 
         # Combobox para la alternativa
         label_respetar_turnos = tk.Label(self.frame, text="Orden de turnos:", anchor="w", width=50)
@@ -61,6 +67,7 @@ class VentanaSimulador:
 
     def simular(self):
         # Recolectar valores de entrada
+        dias_simular = int(self.entry_dias_simular.get())
         hora_medico = int(self.entry_hora_medico.get())
         cant_pacientes = int(self.entry_cant_pacientes.get())
         duracion_consulta = int(self.entry_duracion_consulta.get())
@@ -76,13 +83,35 @@ class VentanaSimulador:
         prob_32_min = float(self.entry_prob_32_min.get())
         prob_35_min = float(self.entry_prob_35_min.get())
         prob_38_min = float(self.entry_prob_38_min.get())
+        filas_mostrar = int(self.entry_filas_mostrar.get())
+        dia_especifico = int(self.entry_dia_especifico.get())
         respetar_turnos = self.combobox_respetar_turnos.get() == "Respetar el orden de los turnos"
+        horarios_pacientes = []
+        horario = hora_medico + 15/60
+        for i in range(cant_pacientes):
+            horarios_pacientes.append(horario)
+            horario = horario + duracion_consulta/60
 
+        datos = [hora_medico, cant_pacientes, duracion_consulta, prob_15_temprano, prob_5_temprano, \
+        prob_exacta, prob_10_tarde, prob_15_tarde, prob_no_presenta, prob_24_min, \
+        prob_27_min, prob_30_min, prob_32_min, prob_35_min, prob_38_min, respetar_turnos, horarios_pacientes]
         # Mostrar valores recogidos
-        print(f"Simulación con parámetros: hora_medico={hora_medico}, cant_pacientes={cant_pacientes}, "
-              f"duracion_consulta={duracion_consulta}, respetar_turnos={respetar_turnos}")
-        print("Simulación iniciada...")
 
+
+        print("Simulación iniciada...")
+        tabla = []
+        for i in range(dias_simular*24):
+            if i == 0:
+                fila = Fila(i+1)
+                lista = fila.simular(datos)
+                tabla.append(fila)
+            else:
+                fila = Fila(i+1, lista[0], lista[1], lista[2], lista[3], lista[4], lista[5], lista[6], lista[7], lista[8])
+                lista = fila.simular(datos)
+                tabla.append(fila)
+
+        for fila in tabla:
+            print(fila)
 # Crear instancia de la ventana
 if __name__ == "__main__":
     root = tk.Tk()
