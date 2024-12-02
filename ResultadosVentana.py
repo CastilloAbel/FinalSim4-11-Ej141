@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
+
 
 class ResultadosVentana:
-    def __init__(self, root, tabla):
+    def __init__(self, root, tabla, filas_a_mostrar, fila_inicio, eventos):
         self.root = root
         self.root.title("Resultados de la Simulación")
 
@@ -11,11 +11,23 @@ class ResultadosVentana:
         self.frame = tk.Frame(self.root, padx=20, pady=20)
         self.frame.pack(fill="both", expand=True)
         self.tabla = tabla
+        self.eventos = eventos
         # Treeview para mostrar los resultados
-        self.tree = ttk.Treeview(self.frame, columns=(
-            "id", "nombre_evento", "dia", "reloj", "estado_medico", 
-            "cola", "tiempo_ocioso_medico", "tiempo_consultorio", "cantidad_atendidos"),
-            show="headings", height=20
+        self.tree = ttk.Treeview(
+            self.frame,
+            columns=(
+                "id",
+                "nombre_evento",
+                "dia",
+                "reloj",
+                "estado_medico",
+                "cola",
+                "tiempo_ocioso_medico",
+                "tiempo_consultorio",
+                "cantidad_atendidos",
+            ),
+            show="headings",
+            height=20,
         )
         self.tree.pack(fill="both", expand=True)
 
@@ -40,13 +52,25 @@ class ResultadosVentana:
         self.tree.column("tiempo_consultorio", width=100, anchor="center")
         self.tree.column("cantidad_atendidos", width=100, anchor="center")
 
-        # Insertar datos en el Treeview
-        for fila in tabla:
-            self.tree.insert("", "end", values=(
-                fila.id, fila.nombre_evento, fila.dia, round(fila.reloj, 2), 
-                fila.estado_medico, len(fila.cola), round(fila.tiempo_ocioso_medico, 2), 
-                round(fila.tiempo_consultorio, 2), fila.cantidad_atendidos
-            ))
+        # Insertar datos en el Treeview con límites de filas a mostrar
+        fila_final = fila_inicio + filas_a_mostrar
+        for fila_id in range(fila_inicio, min(fila_final, len(tabla))):
+            fila = tabla[fila_id]
+            self.tree.insert(
+                "",
+                "end",
+                values=(
+                    fila.id,
+                    fila.nombre_evento,
+                    fila.dia,
+                    round(fila.reloj, 2),
+                    fila.estado_medico,
+                    len(fila.cola),
+                    round(fila.tiempo_ocioso_medico, 2),
+                    round(fila.tiempo_consultorio, 2),
+                    fila.cantidad_atendidos,
+                ),
+            )
 
         # Asociar evento de clic a una fila
         self.tree.bind("<Double-1>", self.mostrar_detalles)
@@ -58,17 +82,23 @@ class ResultadosVentana:
 
     def mostrar_detalles(self, event):
         # Obtener la fila seleccionada
+        fila_id = None
+        eventos = []
+        objetos = []
+
+
         item_id = self.tree.selection()[0]
         valores = self.tree.item(item_id, "values")
 
         # Obtener el índice de la fila seleccionada
-        fila_id = int(valores[0]) - 1
+        fila_id = int(valores[0])
 
         # Obtener datos adicionales
         fila = self.tabla[fila_id]  # `tabla` debe ser accesible para esta función
-        eventos = fila.eventos
+        # eventos = fila.eventos
+        eventos = self.eventos[fila.id]
         objetos = fila.objetos
-
+        print(fila)
         # Crear ventana emergente para mostrar detalles
         detalles_window = tk.Toplevel(self.root)
         detalles_window.title(f"Detalles de la Fila {fila.id}")
@@ -107,10 +137,3 @@ class ResultadosVentana:
         # Botón para cerrar la ventana
         close_button = tk.Button(detalles_window, text="Cerrar", command=detalles_window.destroy)
         close_button.pack(pady=10)
-
-# Uso de ResultadosVentana para pruebas
-# if __name__ == "__main__":
-#     root = tk.Tk()
-#     tabla = []  # Simular datos aquí o pasar la tabla generada en la simulación
-#     app = ResultadosVentana(root, tabla)
-#     root.mainloop()

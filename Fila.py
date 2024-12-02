@@ -2,7 +2,7 @@ import random
 from Paciente import Paciente
 
 class Fila:
-    def __init__(self, id, dia=1, reloj=0.0, eventos=None, estado_medico="EL", cola=None, 
+    def __init__(self, id, dia=1, reloj=0.0, eventos=None, estado_medico="EL", turnos=[], cola=None, 
                  tiempo_ocioso_medico=0.0, tiempo_consultorio=0.0, cantidad_atendidos=0, objetos=None):
         """
         Constructor de la clase Fila. Inicializa los atributos con valores por defecto o asigna valores recibidos.
@@ -11,6 +11,7 @@ class Fila:
         self.nombre_evento = ""
         self.dia = dia
         self.reloj = reloj
+        self.turnos = turnos
         self.eventos = eventos if eventos is not None else []  # Matriz inicializada vacía
         self.estado_medico = estado_medico
         self.cola = cola if cola is not None else []  # Array inicializado vacío
@@ -68,26 +69,34 @@ class Fila:
             self.nombre_evento = "Inicializacion"
             self.eventos = []
             self.estado_medico = "EL"
-            self.cola = [] 
+            self.cola = []
+            self.turnos = []
             self.eventos.append(["llegada_medico", hora_medico])
             for i in range(cant_pacientes):
                 rnd_llegada_paciente = random.random()
                 llegada_paciente = horarios_pacientes[i]
                 llegada = self.calcular_llegada(rnd_llegada_paciente, prob_15_tarde, prob_10_tarde, prob_exacta, prob_5_temprano, prob_15_temprano, prob_no_presenta)
+                if respetar_turnos:
+                    paciente = Paciente(f"{self.dia}-{i+1}", "EL", llegada_paciente + llegada)
+                    self.turnos.append(paciente)
+                else:
+                    paciente = Paciente(f"{self.dia}-{i+1}", "EL", llegada_paciente + llegada)
+                    self.turnos.append(paciente)
                 if llegada is None:
                     self.eventos.append(["llegada_paciente", i+1, rnd_llegada_paciente, llegada_paciente, llegada])
                 else:
                     self.eventos.append(["llegada_paciente",i+1, rnd_llegada_paciente, llegada_paciente, llegada_paciente + llegada])
 
             self.eventos.append(["fin_atencion", None, None, None])
-            reloj = min((evento[-1] for evento in self.eventos if evento[-1] is not None))
-            return [self.dia, reloj, self.eventos, self.estado_medico, self.cola, self.tiempo_ocioso_medico, self.tiempo_consultorio, self.cantidad_atendidos, self.objetos]
+            reloj = min((evento[-1] for evento in self.eventos if evento[-1] is not None), default=None)
+            return [self.dia, reloj, self.eventos, self.estado_medico, self.turnos, self.cola, self.tiempo_ocioso_medico, self.tiempo_consultorio, self.cantidad_atendidos, self.objetos]
         else:
             anterior = self.reloj
-            self.reloj = min((evento[-1] for evento in self.eventos if evento[-1] is not None))
+            self.reloj = min((evento[-1] for evento in self.eventos if evento[-1] is not None), default=None)
             reloj = self.reloj
+            eventos = self.eventos
             dia = self.dia
-            for evento in self.eventos:
+            for evento in eventos:
                 if evento[0] == "llegada_medico" and evento[-1] == self.reloj:
                     self.nombre_evento = "llegada_medico"
                     # if len(self.cola) > 0:
@@ -101,6 +110,8 @@ class Fila:
                     # else:
                     self.estado_medico = "L"
                     self.eventos[0][-1] = None
+                    # for i in self.turnos:
+                    #     print(i)
                 if evento[0] == "llegada_paciente" and self.reloj == evento[-1]:
                     self.nombre_evento = "llegada_paciente"
                     self.tiempo_consultorio = self.reloj - hora_medico
@@ -108,7 +119,7 @@ class Fila:
                         self.eventos[evento[1]][-1] = None
                         paciente = Paciente(f"{self.dia}-{evento[1]}", "EA", evento[3])
                         self.objetos.append(paciente)
-                        self.cola.append(f"Paciente {evento[1]}")
+                        self.cola.append(paciente)
                     else:
                         self.tiempo_ocioso_medico = self.tiempo_ocioso_medico + (self.reloj - anterior)
                         self.estado_medico = "O"
@@ -136,10 +147,9 @@ class Fila:
                         if self.eventos[-2][-1] is None:
                             dia = self.dia + 1
                             reloj = 0
-                        self.eventos[-1][-1] = None
-                
-        
-            return [dia, reloj, self.eventos, self.estado_medico, self.cola, self.tiempo_ocioso_medico, self.tiempo_consultorio, self.cantidad_atendidos, self.objetos]
+                        self.eventos[-1] = ["fin_atencion", None, None, None]
+            # reloj = min((evento[-1] for evento in self.eventos if evento[-1] is not None))
+            return [dia, reloj, self.eventos, self.estado_medico, self.turnos ,self.cola, self.tiempo_ocioso_medico, self.tiempo_consultorio, self.cantidad_atendidos, self.objetos]
         
 
     def __str__(self):

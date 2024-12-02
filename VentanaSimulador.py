@@ -31,7 +31,7 @@ class VentanaSimulador:
             ("Probabilidad de que el médico tarde 35 min en atender:", "0.15"),
             ("Probabilidad de que el médico tarde 38 min en atender:", "0.05"),
             ("Cantidad de filas a mostrar (I):", "100"),
-            ("Día específico a mostrar (J):", "0")
+            ("Día específico a mostrar (J):", "1")
         ]
 
         self.entries = []
@@ -99,21 +99,27 @@ class VentanaSimulador:
 
 
         print("Simulación iniciada...")
-        tabla = []
+        tabla = dict()
+        eventos = dict()
         for i in range(dias_simular*24):
             if i == 0:
                 fila = Fila(i+1)
                 lista = fila.simular(datos)
-                tabla.append(fila)
+                tabla[fila.id] = fila
+                eventos[fila.id] = fila.eventos
+                # tabla.append(fila)
+                # print(fila)
             else:
-                fila = Fila(i+1, lista[0], lista[1], lista[2], lista[3], lista[4], lista[5], lista[6], lista[7], lista[8])
+                fila = Fila(i+1, lista[0], lista[1], lista[2], lista[3], lista[4], lista[5], lista[6], lista[7], lista[8], lista[9])
                 lista = fila.simular(datos)
-                tabla.append(fila)
+                tabla[fila.id] = fila
+                eventos[fila.id] = fila.eventos
+                # tabla.append(fila)
 
-        for fila in tabla:
-            print(fila)
+        # for fila in tabla:
+        #     print(fila)
         root = tk.Tk()
-        resultados = ResultadosVentana(root, tabla)
+        resultados = ResultadosVentana(root, tabla, filas_mostrar, dia_especifico, eventos)
         root.mainloop()
 # Crear instancia de la ventana
 if __name__ == "__main__":
