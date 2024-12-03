@@ -173,7 +173,7 @@ class Fila:
                         for turno in self.turnos:
                             if turno["paciente"] == self.paciente_actual:
                                 turno["estado"] = "Atendido"
-                                # self.eventos[-1] = ["fin_atencion", None, None, None, None]
+                                self.eventos[-1] = ["fin_atencion", None, None, None, None]
                                 break
                     self.paciente_actual = None
                     self.estado_medico = "Libre"
