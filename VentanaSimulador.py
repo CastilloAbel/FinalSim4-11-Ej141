@@ -124,7 +124,7 @@ class VentanaSimulador:
             else:
                 estado = []
                 prox = []
-                fila = Fila(i+1, lista[0], lista[1], lista[2], lista[3], lista[4], lista[5], lista[6], lista[7], lista[8], lista[9])
+                fila = Fila(i+1, lista[0], lista[1], lista[2], lista[3], lista[4], lista[5], lista[6], lista[7], lista[8], lista[9], lista[10], lista[11])
                 lista = fila.simular(datos)
                 tabla[fila.id] = fila
                 eventos[fila.id] = [*fila.eventos]
@@ -136,9 +136,9 @@ class VentanaSimulador:
                     prox.append(p[-1])
                 proximos[fila.id] = [*prox]
                 # tabla.append(fila)
-        print(turnos[7])
-        print(turnos[8])
-        print(turnos[9])
+        # print(turnos[7])
+        # print(turnos[8])
+        # print(turnos[9])
         # for fila in tabla:
         #     print(fila)
         root = tk.Tk()

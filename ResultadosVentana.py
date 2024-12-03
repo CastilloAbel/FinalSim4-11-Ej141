@@ -8,7 +8,7 @@ class ResultadosVentana:
         self.root.title("Resultados de la Simulación")
 
         # Frame principal
-        self.frame = tk.Frame(self.root, padx=20, pady=20)
+        self.frame = tk.Frame(self.root, padx=40, pady=20)
         self.frame.pack(fill="both", expand=True)
         self.tabla = tabla
         self.eventos = eventos
@@ -24,10 +24,12 @@ class ResultadosVentana:
                 "dia",
                 "reloj",
                 "estado_medico",
-                "paciente",
                 "tiempo_ocioso_medico",
                 "tiempo_consultorio",
                 "cantidad_atendidos",
+                "acumulador_ocioso",
+                "acumulador_consultorio",
+                "acumulador_atendidos"
             ),
             show="headings",
             height=20,
@@ -40,20 +42,24 @@ class ResultadosVentana:
         self.tree.heading("dia", text="Día")
         self.tree.heading("reloj", text="Reloj")
         self.tree.heading("estado_medico", text="Estado Médico")
-        self.tree.heading("paciente", text="Paciente")
         self.tree.heading("tiempo_ocioso_medico", text="Tiempo Ocioso")
         self.tree.heading("tiempo_consultorio", text="Tiempo Consultorio")
         self.tree.heading("cantidad_atendidos", text="Atendidos")
+        self.tree.heading("acumulador_ocioso", text="Acumulador tiempo ocioso")
+        self.tree.heading("acumulador_consultorio", text="Acumulador tiempo en consultorio")
+        self.tree.heading("acumulador_atendidos", text="Acumulador de atendidos")
 
         self.tree.column("id", width=50, anchor="center")
         self.tree.column("nombre_evento", width=150, anchor="w")
         self.tree.column("dia", width=50, anchor="center")
         self.tree.column("reloj", width=100, anchor="center")
         self.tree.column("estado_medico", width=100, anchor="center")
-        self.tree.column("paciente", width=150, anchor="w")
         self.tree.column("tiempo_ocioso_medico", width=100, anchor="center")
         self.tree.column("tiempo_consultorio", width=100, anchor="center")
         self.tree.column("cantidad_atendidos", width=100, anchor="center")
+        self.tree.column("acumulador_ocioso", width=150, anchor="center")
+        self.tree.column("acumulador_consultorio", width=150, anchor="center")
+        self.tree.column("acumulador_atendidos", width=150, anchor="center")
 
     def mostrar_resultados(self, tabla, filas_a_mostrar, fila_inicio, eventos, turnos):
         # Insertar datos en el Treeview con límites de filas a mostrar
@@ -67,13 +73,15 @@ class ResultadosVentana:
                     fila.id,
                     fila.nombre_evento,
                     fila.dia,
-                    round(fila.reloj, 2),
+                    truncar(fila.reloj),
                     fila.estado_medico,
                     # len(fila.turnos),
-                    fila.paciente_actual,
-                    round(fila.tiempo_ocioso_medico, 2),
-                    round(fila.tiempo_consultorio, 2),
+                    truncar(fila.tiempo_ocioso_medico),
+                    truncar(fila.tiempo_consultorio),
                     fila.cantidad_atendidos,
+                    truncar(fila.acum_ocioso),
+                    truncar(fila.acum_consultorio),
+                    fila.acum_atendidos
                 ),
             )
 
@@ -130,7 +138,7 @@ class ResultadosVentana:
             if i == 0:
                 eventos_text.insert("end", f"Nombre: {evento[0]}, Hora llegada:{proximos[i]}\n")
             else:
-                eventos_text.insert("end", f"Nombre: {evento[0]}, ID:{evento[1]}, RND:{evento[2]}, Tiempo:{evento[3]}, Proxima:{proximos[i]}\n")
+                eventos_text.insert("end", f"Nombre: {evento[0]}, ID:{evento[1]}, RND:{truncar(evento[2]) if evento[2] is not None else evento[2]}, Tiempo:{truncar(evento[3]) if evento[3] is not None else evento[3]}, Proxima:{truncar(proximos[i]) if proximos[i] is not None else None}\n")
             i += 1
 
         # Mostrar lista de objetos
@@ -144,9 +152,16 @@ class ResultadosVentana:
         objetos_scroll.pack(side="right", fill="y")
         i = 0
         for objeto in objetos:
-            objetos_text.insert("end", f"ID: {objeto['paciente'].id}, Estado: {estados[i]}, Hora Llegada: {objeto['hora']}\n")
+            objetos_text.insert("end", f"ID: {objeto['paciente'].id}, Estado: {estados[i]}, Hora Llegada: {truncar(objeto['hora'] if objeto['hora'] is not None else None)}\n")
             i += 1
 
         # Botón para cerrar la ventana
         close_button = tk.Button(detalles_window, text="Cerrar", command=detalles_window.destroy)
         close_button.pack(pady=10)
+
+def truncar(valor, decimales=3):
+    """
+    Trunca el valor dado a la cantidad de decimales especificados.
+    """
+    factor = 10 ** decimales
+    return int(valor * factor) / factor
