@@ -203,13 +203,15 @@ class Fila:
                             self.eventos[id][-1] = None
                             self.eventos[-1] = ["fin_atencion", turno["paciente"].id, rnd_fin_atencion, tiempo_atencion, proximo_fin_atencion]
                             break
-                        elif turno["estado"] == "Ausente" or turno["estado"] == "Atendido":
-                            dia = self.dia + 1
-                            reloj = 0
-                            self.tiempo_consultorio = 0.0
-                            self.tiempo_ocioso_medico = 0.0
-                            self.cantidad_atendidos = 0
+                        else:
                             self.eventos[-1] = ["fin_atencion", None, None, None, None]
+                        # elif turno["estado"] == "Ausente" or turno["estado"] == "Atendido":
+                        #     dia = self.dia + 1
+                        #     reloj = 0
+                        #     self.tiempo_consultorio = 0.0
+                        #     self.tiempo_ocioso_medico = 0.0
+                        #     self.cantidad_atendidos = 0
+                        #     self.eventos[-1] = ["fin_atencion", None, None, None, None]
                     ultimo_turno = self.turnos[-1]
                     if ultimo_turno["estado"] == "Atendido":
                             dia = self.dia + 1

@@ -107,7 +107,7 @@ class ResultadosVentana:
         fila_id = int(valores[0])
 
         # Obtener datos adicionales
-        fila = self.tabla[fila_id]  # `tabla` debe ser accesible para esta función
+        fila = self.tabla[fila_id-1]  # `tabla` debe ser accesible para esta función
         # eventos = fila.eventos
         eventos = self.eventos[fila.id]
         objetos = self.turnos[fila.id]

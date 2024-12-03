@@ -31,7 +31,7 @@ class VentanaSimulador:
             ("Probabilidad de que el médico tarde 35 min en atender:", "0.15"),
             ("Probabilidad de que el médico tarde 38 min en atender:", "0.05"),
             ("Cantidad de filas a mostrar (I):", "100"),
-            ("Día específico a mostrar (J):", "1")
+            ("ID específico a mostrar (J):", "1")
         ]
 
         self.entries = []
@@ -99,18 +99,18 @@ class VentanaSimulador:
 
 
         print("Simulación iniciada...")
-        tabla = dict()
+        tabla = []
         eventos = dict()
         turnos = dict()
         estados = dict()
         proximos = dict()
-        for i in range(dias_simular*24):
+        for i in range(100000):
             if i == 0:
                 prox = []
                 estado = []
                 fila = Fila(i+1)
                 lista = fila.simular(datos)
-                tabla[fila.id] = fila
+                tabla.append(fila)
                 eventos[fila.id] = [*fila.eventos]
                 turnos[fila.id] = [*fila.turnos]
                 for est in fila.turnos:
@@ -122,19 +122,23 @@ class VentanaSimulador:
                 # tabla.append(fila)
                 # print(fila)
             else:
-                estado = []
-                prox = []
-                fila = Fila(i+1, lista[0], lista[1], lista[2], lista[3], lista[4], lista[5], lista[6], lista[7], lista[8], lista[9], lista[10], lista[11])
-                lista = fila.simular(datos)
-                tabla[fila.id] = fila
-                eventos[fila.id] = [*fila.eventos]
-                turnos[fila.id] = [*fila.turnos]
-                for est in fila.turnos:
-                    estado.append(est["estado"])
-                estados[fila.id] = [*estado]
-                for p in fila.eventos:
-                    prox.append(p[-1])
-                proximos[fila.id] = [*prox]
+                if fila.dia >= dias_simular:
+                    tabla.pop()
+                    break
+                else:
+                    estado = []
+                    prox = []
+                    fila = Fila(i+1, lista[0], lista[1], lista[2], lista[3], lista[4], lista[5], lista[6], lista[7], lista[8], lista[9], lista[10], lista[11])
+                    lista = fila.simular(datos)
+                    tabla.append(fila)
+                    eventos[fila.id] = [*fila.eventos]
+                    turnos[fila.id] = [*fila.turnos]
+                    for est in fila.turnos:
+                        estado.append(est["estado"])
+                    estados[fila.id] = [*estado]
+                    for p in fila.eventos:
+                        prox.append(p[-1])
+                    proximos[fila.id] = [*prox]
                 # tabla.append(fila)
         # print(turnos[7])
         # print(turnos[8])
