@@ -3,7 +3,7 @@ from tkinter import ttk
 
 
 class ResultadosVentana:
-    def __init__(self, root, tabla, filas_a_mostrar, fila_inicio, eventos):
+    def __init__(self, root, tabla, eventos, turnos, estados, proximos):
         self.root = root
         self.root.title("Resultados de la Simulación")
 
@@ -12,6 +12,9 @@ class ResultadosVentana:
         self.frame.pack(fill="both", expand=True)
         self.tabla = tabla
         self.eventos = eventos
+        self.turnos = turnos
+        self.estados = estados
+        self.proximos = proximos
         # Treeview para mostrar los resultados
         self.tree = ttk.Treeview(
             self.frame,
@@ -52,6 +55,7 @@ class ResultadosVentana:
         self.tree.column("tiempo_consultorio", width=100, anchor="center")
         self.tree.column("cantidad_atendidos", width=100, anchor="center")
 
+    def mostrar_resultados(self, tabla, filas_a_mostrar, fila_inicio, eventos, turnos):
         # Insertar datos en el Treeview con límites de filas a mostrar
         fila_final = fila_inicio + filas_a_mostrar
         for fila_id in range(fila_inicio, min(fila_final, len(tabla))):
@@ -98,8 +102,11 @@ class ResultadosVentana:
         fila = self.tabla[fila_id]  # `tabla` debe ser accesible para esta función
         # eventos = fila.eventos
         eventos = self.eventos[fila.id]
-        objetos = fila.turnos
-        print(fila)
+        objetos = self.turnos[fila.id]
+        estados = self.estados[fila.id]
+        proximos = self.proximos[fila.id]
+        # print(fila)
+        print(self.eventos[1])
         # Crear ventana emergente para mostrar detalles
         detalles_window = tk.Toplevel(self.root)
         detalles_window.title(f"Detalles de la Fila {fila.id}")
@@ -118,9 +125,13 @@ class ResultadosVentana:
         eventos_scroll = ttk.Scrollbar(detalles_frame, orient="vertical", command=eventos_text.yview)
         eventos_text.configure(yscrollcommand=eventos_scroll.set)
         eventos_scroll.pack(side="right", fill="y")
-
+        i = 0
         for evento in eventos:
-            eventos_text.insert("end", f"{evento}\n")
+            if i == 0:
+                eventos_text.insert("end", f"Nombre: {evento[0]}, Hora llegada:{proximos[i]}\n")
+            else:
+                eventos_text.insert("end", f"Nombre: {evento[0]}, ID:{evento[1]}, RND:{evento[2]}, Tiempo:{evento[3]}, Proxima:{proximos[i]}\n")
+            i += 1
 
         # Mostrar lista de objetos
         objetos_label = tk.Label(detalles_frame, text="Lista de Objetos", font=("Arial", 12, "bold"))
@@ -131,9 +142,10 @@ class ResultadosVentana:
         objetos_scroll = ttk.Scrollbar(detalles_frame, orient="vertical", command=objetos_text.yview)
         objetos_text.configure(yscrollcommand=objetos_scroll.set)
         objetos_scroll.pack(side="right", fill="y")
-
+        i = 0
         for objeto in objetos:
-            objetos_text.insert("end", f"ID: {objeto['paciente'].id}, Estado: {objeto['estado']}, Hora Llegada: {objeto['hora']}\n")
+            objetos_text.insert("end", f"ID: {objeto['paciente'].id}, Estado: {estados[i]}, Hora Llegada: {objeto['hora']}\n")
+            i += 1
 
         # Botón para cerrar la ventana
         close_button = tk.Button(detalles_window, text="Cerrar", command=detalles_window.destroy)

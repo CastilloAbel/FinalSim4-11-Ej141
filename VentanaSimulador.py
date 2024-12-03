@@ -101,26 +101,50 @@ class VentanaSimulador:
         print("Simulación iniciada...")
         tabla = dict()
         eventos = dict()
+        turnos = dict()
+        estados = dict()
+        proximos = dict()
         for i in range(dias_simular*24):
             if i == 0:
+                prox = []
+                estado = []
                 fila = Fila(i+1)
                 lista = fila.simular(datos)
                 tabla[fila.id] = fila
-                eventos[fila.id] = fila.eventos
+                eventos[fila.id] = [*fila.eventos]
+                turnos[fila.id] = [*fila.turnos]
+                for est in fila.turnos:
+                    estado.append(est["estado"])
+                estados[fila.id] = [*estado]
+                for p in fila.eventos:
+                    prox.append(p[-1])
+                proximos[fila.id] = [*prox]
                 # tabla.append(fila)
                 # print(fila)
             else:
+                estado = []
+                prox = []
                 fila = Fila(i+1, lista[0], lista[1], lista[2], lista[3], lista[4], lista[5], lista[6], lista[7], lista[8], lista[9])
                 lista = fila.simular(datos)
                 tabla[fila.id] = fila
-                eventos[fila.id] = fila.eventos
+                eventos[fila.id] = [*fila.eventos]
+                turnos[fila.id] = [*fila.turnos]
+                for est in fila.turnos:
+                    estado.append(est["estado"])
+                estados[fila.id] = [*estado]
+                for p in fila.eventos:
+                    prox.append(p[-1])
+                proximos[fila.id] = [*prox]
                 # tabla.append(fila)
-
+        print(turnos[7])
+        print(turnos[8])
+        print(turnos[9])
         # for fila in tabla:
         #     print(fila)
         root = tk.Tk()
-        resultados = ResultadosVentana(root, tabla, filas_mostrar, dia_especifico, eventos)
-        root.mainloop()
+        resultados = ResultadosVentana(root, tabla, eventos, turnos, estados, proximos)
+        # root.mainloop()
+        resultados.mostrar_resultados(tabla, filas_mostrar, dia_especifico, eventos, turnos)
 # Crear instancia de la ventana
 if __name__ == "__main__":
     root = tk.Tk()
