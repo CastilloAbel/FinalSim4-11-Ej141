@@ -21,7 +21,7 @@ class ResultadosVentana:
                 "dia",
                 "reloj",
                 "estado_medico",
-                "cola",
+                "paciente",
                 "tiempo_ocioso_medico",
                 "tiempo_consultorio",
                 "cantidad_atendidos",
@@ -37,7 +37,7 @@ class ResultadosVentana:
         self.tree.heading("dia", text="Día")
         self.tree.heading("reloj", text="Reloj")
         self.tree.heading("estado_medico", text="Estado Médico")
-        self.tree.heading("cola", text="Cola")
+        self.tree.heading("paciente", text="Paciente")
         self.tree.heading("tiempo_ocioso_medico", text="Tiempo Ocioso")
         self.tree.heading("tiempo_consultorio", text="Tiempo Consultorio")
         self.tree.heading("cantidad_atendidos", text="Atendidos")
@@ -47,7 +47,7 @@ class ResultadosVentana:
         self.tree.column("dia", width=50, anchor="center")
         self.tree.column("reloj", width=100, anchor="center")
         self.tree.column("estado_medico", width=100, anchor="center")
-        self.tree.column("cola", width=150, anchor="w")
+        self.tree.column("paciente", width=150, anchor="w")
         self.tree.column("tiempo_ocioso_medico", width=100, anchor="center")
         self.tree.column("tiempo_consultorio", width=100, anchor="center")
         self.tree.column("cantidad_atendidos", width=100, anchor="center")
@@ -65,7 +65,8 @@ class ResultadosVentana:
                     fila.dia,
                     round(fila.reloj, 2),
                     fila.estado_medico,
-                    len(fila.cola),
+                    # len(fila.turnos),
+                    fila.paciente_actual,
                     round(fila.tiempo_ocioso_medico, 2),
                     round(fila.tiempo_consultorio, 2),
                     fila.cantidad_atendidos,
@@ -97,7 +98,7 @@ class ResultadosVentana:
         fila = self.tabla[fila_id]  # `tabla` debe ser accesible para esta función
         # eventos = fila.eventos
         eventos = self.eventos[fila.id]
-        objetos = fila.objetos
+        objetos = fila.turnos
         print(fila)
         # Crear ventana emergente para mostrar detalles
         detalles_window = tk.Toplevel(self.root)
@@ -132,7 +133,7 @@ class ResultadosVentana:
         objetos_scroll.pack(side="right", fill="y")
 
         for objeto in objetos:
-            objetos_text.insert("end", f"ID: {objeto.id}, Estado: {objeto.estado}, Hora Llegada: {objeto.hora_llegada}\n")
+            objetos_text.insert("end", f"ID: {objeto['paciente'].id}, Estado: {objeto['estado']}, Hora Llegada: {objeto['hora']}\n")
 
         # Botón para cerrar la ventana
         close_button = tk.Button(detalles_window, text="Cerrar", command=detalles_window.destroy)
