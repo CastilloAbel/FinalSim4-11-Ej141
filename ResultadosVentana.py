@@ -74,35 +74,6 @@ class ResultadosVentana:
 
     def mostrar_resultados(self, tabla, filas_a_mostrar, fila_inicio, eventos, turnos):
         # Insertar datos en el Treeview con límites de filas a mostrar
-        # fila_final = fila_inicio + filas_a_mostrar
-        # for fila_id in range(fila_inicio, min(fila_final, len(tabla))):
-        #     fila = tabla[fila_id]
-        #     self.tree.insert(
-        #         "",
-        #         "end",
-        #         values=(
-        #             fila.id,
-        #             fila.nombre_evento,
-        #             fila.dia,
-        #             truncar(fila.reloj),
-        #             fila.estado_medico,
-        #             # len(fila.turnos),
-        #             truncar(fila.tiempo_ocioso_medico),
-        #             truncar(fila.tiempo_consultorio),
-        #             fila.cantidad_atendidos,
-        #             truncar(fila.acum_ocioso),
-        #             truncar(fila.acum_consultorio),
-        #             fila.acum_atendidos
-        #         ),
-        #     )
-
-        # # Asociar evento de clic a una fila
-        # self.tree.bind("<Double-1>", self.mostrar_detalles)
-
-        # # Scrollbars
-        # scrollbar_y = ttk.Scrollbar(self.frame, orient="vertical", command=self.tree.yview)
-        # scrollbar_y.pack(side="right", fill="y")
-        # self.tree.configure(yscrollcommand=scrollbar_y.set)
 
         for row in self.tree.get_children():
             self.tree.delete(row)
