@@ -133,8 +133,8 @@ class Fila:
                     #     print(i)
                 if evento[0] == "llegada_paciente" and self.reloj == evento[-1]:
                     self.nombre_evento = "llegada_paciente"
-                    print(self.reloj)
-                    print(self.turnos)
+                    # print(self.reloj)
+                    # print(self.turnos)
                     self.tiempo_consultorio = self.reloj - float(hora_medico)
                     self.acum_consultorio += self.tiempo_consultorio
                     for turno in self.turnos:
@@ -171,6 +171,7 @@ class Fila:
                     #     proximo_fin_atencion = self.reloj + tiempo_atencion
                     #     self.eventos[evento[1]][-1] = None
                     #     self.eventos[-1] = ["fin_atencion", rnd_fin_atencion, tiempo_atencion, proximo_fin_atencion]
+                    break
                 elif evento[0] == "fin_atencion" and self.reloj == evento[-1]:
                     self.nombre_evento = "fin_atencion"
                     self.cantidad_atendidos += 1
@@ -212,8 +213,10 @@ class Fila:
                         #     self.tiempo_ocioso_medico = 0.0
                         #     self.cantidad_atendidos = 0
                         #     self.eventos[-1] = ["fin_atencion", None, None, None, None]
-                    ultimo_turno = self.turnos[-1]
-                    if ultimo_turno["estado"] == "Atendido":
+                    for turno in self.turnos:
+                        if turno["estado"] == "Esperando LLegada" or turno["estado"] == "Esperando Atencion" or turno["estado"] == "Siendo Atendido":
+                            break
+                        elif turno == self.turnos[-1] and (turno["estado"] == "Atendido" or turno["estado"] == "Ausente"):
                             dia = self.dia + 1
                             reloj = 0
                             self.tiempo_consultorio = 0.0
@@ -235,6 +238,9 @@ class Fila:
                     #     self.eventos[-1] = ["fin_atencion", None, None, None]
             # reloj = min((evento[-1] for evento in self.eventos if evento[-1] is not None))
             return [dia, reloj, self.eventos, self.estado_medico, self.turnos ,self.paciente_actual, self.tiempo_ocioso_medico, self.tiempo_consultorio, self.cantidad_atendidos, self.acum_ocioso, self.acum_consultorio, self.acum_atendidos]
+        
+
+            # return [dia, reloj, self.eventos, self.estado_medico, self.turnos ,self.paciente_actual, self.tiempo_ocioso_medico, self.tiempo_consultorio, self.cantidad_atendidos, self.acum_ocioso, self.acum_consultorio, self.acum_atendidos]
         
 
     def __str__(self):

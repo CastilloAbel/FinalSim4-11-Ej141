@@ -53,7 +53,7 @@ class ResultadosVentana:
         self.tree.column("nombre_evento", width=150, anchor="w")
         self.tree.column("dia", width=50, anchor="center")
         self.tree.column("reloj", width=100, anchor="center")
-        self.tree.column("estado_medico", width=100, anchor="center")
+        self.tree.column("estado_medico", width=150, anchor="center")
         self.tree.column("tiempo_ocioso_medico", width=100, anchor="center")
         self.tree.column("tiempo_consultorio", width=100, anchor="center")
         self.tree.column("cantidad_atendidos", width=100, anchor="center")
@@ -63,10 +63,44 @@ class ResultadosVentana:
 
     def mostrar_resultados(self, tabla, filas_a_mostrar, fila_inicio, eventos, turnos):
         # Insertar datos en el Treeview con límites de filas a mostrar
-        fila_final = fila_inicio + filas_a_mostrar
-        for fila_id in range(fila_inicio, min(fila_final, len(tabla))):
-            fila = tabla[fila_id]
-            self.tree.insert(
+        # fila_final = fila_inicio + filas_a_mostrar
+        # for fila_id in range(fila_inicio, min(fila_final, len(tabla))):
+        #     fila = tabla[fila_id]
+        #     self.tree.insert(
+        #         "",
+        #         "end",
+        #         values=(
+        #             fila.id,
+        #             fila.nombre_evento,
+        #             fila.dia,
+        #             truncar(fila.reloj),
+        #             fila.estado_medico,
+        #             # len(fila.turnos),
+        #             truncar(fila.tiempo_ocioso_medico),
+        #             truncar(fila.tiempo_consultorio),
+        #             fila.cantidad_atendidos,
+        #             truncar(fila.acum_ocioso),
+        #             truncar(fila.acum_consultorio),
+        #             fila.acum_atendidos
+        #         ),
+        #     )
+
+        # # Asociar evento de clic a una fila
+        # self.tree.bind("<Double-1>", self.mostrar_detalles)
+
+        # # Scrollbars
+        # scrollbar_y = ttk.Scrollbar(self.frame, orient="vertical", command=self.tree.yview)
+        # scrollbar_y.pack(side="right", fill="y")
+        # self.tree.configure(yscrollcommand=scrollbar_y.set)
+
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+        
+
+
+        if fila_inicio == 0 and filas_a_mostrar != 0:
+            for i, fila in enumerate(tabla[0:filas_a_mostrar]):
+                self.tree.insert(
                 "",
                 "end",
                 values=(
@@ -84,6 +118,67 @@ class ResultadosVentana:
                     fila.acum_atendidos
                 ),
             )
+                
+            self.tree.insert(
+                "",
+                "end",
+                values=(
+                    tabla[-1].id,
+                    tabla[-1].nombre_evento,
+                    tabla[-1].dia,
+                    truncar(tabla[-1].reloj),
+                    tabla[-1].estado_medico,
+                    # len(fila.turnos),
+                    truncar(tabla[-1].tiempo_ocioso_medico),
+                    truncar(tabla[-1].tiempo_consultorio),
+                    tabla[-1].cantidad_atendidos,
+                    truncar(tabla[-1].acum_ocioso),
+                    truncar(tabla[-1].acum_consultorio),
+                    tabla[-1].acum_atendidos
+                ),
+            )
+        elif fila_inicio != 0 and filas_a_mostrar != 0:
+            tabla_hora = list(filter(lambda fila: fila.id >= fila_inicio-1, tabla))[0].id
+            for i, fila in enumerate(tabla[tabla_hora:filas_a_mostrar+tabla_hora]):
+                self.tree.insert(
+                "",
+                "end",
+                values=(
+                    fila.id,
+                    fila.nombre_evento,
+                    fila.dia,
+                    truncar(fila.reloj),
+                    fila.estado_medico,
+                    # len(fila.turnos),
+                    truncar(fila.tiempo_ocioso_medico),
+                    truncar(fila.tiempo_consultorio),
+                    fila.cantidad_atendidos,
+                    truncar(fila.acum_ocioso),
+                    truncar(fila.acum_consultorio),
+                    fila.acum_atendidos
+                ),
+            )
+                
+            self.tree.insert(
+                "",
+                "end",
+                values=(
+                    tabla[-1].id,
+                    tabla[-1].nombre_evento,
+                    tabla[-1].dia,
+                    truncar(tabla[-1].reloj),
+                    tabla[-1].estado_medico,
+                    # len(fila.turnos),
+                    truncar(tabla[-1].tiempo_ocioso_medico),
+                    truncar(tabla[-1].tiempo_consultorio),
+                    tabla[-1].cantidad_atendidos,
+                    truncar(tabla[-1].acum_ocioso),
+                    truncar(tabla[-1].acum_consultorio),
+                    tabla[-1].acum_atendidos
+                ),
+            )
+        else:
+            self.tree.insert("", "end", values="")
 
         # Asociar evento de clic a una fila
         self.tree.bind("<Double-1>", self.mostrar_detalles)
@@ -92,6 +187,7 @@ class ResultadosVentana:
         scrollbar_y = ttk.Scrollbar(self.frame, orient="vertical", command=self.tree.yview)
         scrollbar_y.pack(side="right", fill="y")
         self.tree.configure(yscrollcommand=scrollbar_y.set)
+
 
     def mostrar_detalles(self, event):
         # Obtener la fila seleccionada
@@ -105,7 +201,7 @@ class ResultadosVentana:
 
         # Obtener el índice de la fila seleccionada
         fila_id = int(valores[0])
-
+        # print(fila_id)
         # Obtener datos adicionales
         fila = self.tabla[fila_id-1]  # `tabla` debe ser accesible para esta función
         # eventos = fila.eventos
@@ -114,7 +210,7 @@ class ResultadosVentana:
         estados = self.estados[fila.id]
         proximos = self.proximos[fila.id]
         # print(fila)
-        print(self.eventos[1])
+        # print(self.eventos[1])
         # Crear ventana emergente para mostrar detalles
         detalles_window = tk.Toplevel(self.root)
         detalles_window.title(f"Detalles de la Fila {fila.id}")
@@ -152,7 +248,7 @@ class ResultadosVentana:
         objetos_scroll.pack(side="right", fill="y")
         i = 0
         for objeto in objetos:
-            objetos_text.insert("end", f"ID: {objeto['paciente'].id}, Estado: {estados[i]}, Hora Llegada: {truncar(objeto['hora'] if objeto['hora'] is not None else None)}\n")
+            objetos_text.insert("end", f"ID: {objeto['paciente'].id}, Estado: {estados[i]}, Hora Llegada: {truncar(objeto['hora']) if objeto['hora'] is not None else None}\n")
             i += 1
 
         # Botón para cerrar la ventana

@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from ResultadosVentana import ResultadosVentana
 from Fila import Fila
 
@@ -18,7 +19,7 @@ class VentanaSimulador:
             ("Hora de llegada del médico (hs):", "8"),
             ("Cantidad de pacientes:", "16"),
             ("Duración de la consulta (min):", "30"),
-            ("Probabilidad de que el paciente llegue 15 min temprano:", "0.15"),
+            ("Probabilidad de que el paciente llegue 15 min temprano:", "0.1"),
             ("Probabilidad de que el paciente llegue 5 min temprano:", "0.3"),
             ("Probabilidad de que el paciente llegue a la hora exacta:", "0.4"),
             ("Probabilidad de que el paciente llegue 10 min tarde:", "0.1"),
@@ -31,7 +32,7 @@ class VentanaSimulador:
             ("Probabilidad de que el médico tarde 35 min en atender:", "0.15"),
             ("Probabilidad de que el médico tarde 38 min en atender:", "0.05"),
             ("Cantidad de filas a mostrar (I):", "100"),
-            ("ID específico a mostrar (J):", "1")
+            ("ID específico a mostrar (J):", "0")
         ]
 
         self.entries = []
@@ -86,6 +87,26 @@ class VentanaSimulador:
         filas_mostrar = int(self.entry_filas_mostrar.get())
         dia_especifico = int(self.entry_dia_especifico.get())
         respetar_turnos = self.combobox_respetar_turnos.get() == "Respetar el orden de los turnos"
+
+        suma_probabilidades = prob_15_temprano + prob_5_temprano + prob_exacta + prob_10_tarde + prob_15_tarde + prob_no_presenta
+        suma = prob_24_min + prob_27_min + prob_30_min + prob_32_min + prob_35_min + prob_38_min 
+        # Verificar si la suma es igual a 1
+        # print(suma_probabilidades)
+        # print(suma)
+        if not abs(suma_probabilidades - 1.0) < 1e-6:  # Permitir un margen mínimo por precisión
+            messagebox.showwarning(
+                "Advertencia",
+                f"La suma de las probabilidades debe ser igual a 1. Actualmente es {suma_probabilidades:.3f}."
+            )
+            return  # Salir de la función si las probabilidades no son válidas
+        elif  not abs(suma - 1.0) < 1e-6:
+            messagebox.showwarning(
+                "Advertencia",
+                f"La suma de las probabilidades debe ser igual a 1. Actualmente es {suma:.3f}."
+            )
+
+
+
         horarios_pacientes = []
         horario = hora_medico + 15/60
         for i in range(cant_pacientes):
@@ -122,7 +143,7 @@ class VentanaSimulador:
                 # tabla.append(fila)
                 # print(fila)
             else:
-                if fila.dia >= dias_simular:
+                if fila.dia >= dias_simular+1:
                     tabla.pop()
                     break
                 else:
