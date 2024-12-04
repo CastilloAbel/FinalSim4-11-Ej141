@@ -193,7 +193,7 @@ class ResultadosVentana:
         # Crear ventana emergente para mostrar detalles
         detalles_window = tk.Toplevel(self.root)
         detalles_window.title(f"Detalles de la Fila {fila.id}")
-        detalles_window.geometry("800x400")
+        detalles_window.geometry("800x600")
 
         # Frame para Matriz de Eventos
         eventos_frame = tk.Frame(detalles_window, padx=10, pady=10)
