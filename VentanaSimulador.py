@@ -39,10 +39,10 @@ class VentanaSimulador:
 
         for i, (label_text, default_value) in enumerate(self.parameters):
             label = tk.Label(self.frame, text=label_text, anchor="w", width=50)
-            label.grid(row=i, column=0, sticky="w", pady=5)
+            label.grid(row=i, column=0, sticky="w", pady=4)
             entry = tk.Entry(self.frame, width=15)
             entry.insert(0, default_value)
-            entry.grid(row=i, column=1, sticky="e", pady=5)
+            entry.grid(row=i, column=1, sticky="e", pady=4)
             self.entries.append(entry)
 
         # Asignar las entradas a variables para un acceso más legible
