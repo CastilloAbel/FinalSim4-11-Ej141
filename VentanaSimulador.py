@@ -147,7 +147,7 @@ class VentanaSimulador:
             estados = dict()
             proximos = dict()
             
-            for i in range(100000):
+            for i in range(100000000):
                 if i == 0:
                     prox = []
                     estado = []
